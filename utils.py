@@ -33,12 +33,13 @@ HW = [0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4, 1, 2, 2, 3, 2, 3, 3, 4, 2,
       4, 5, 4, 5, 5, 6, 4, 5, 5, 6, 5, 6, 6, 7, 3, 4, 4, 5, 4, 5, 5, 6, 4, 5, 5, 6, 5, 6, 6, 7, 4, 5, 5, 6, 5,
       6, 6, 7, 5, 6, 6, 7, 6, 7, 7, 8]
 
-def pre_process(trace):
-    mu = np.average(trace)
-    std = np.std(trace)
-    if std != 0:
-        trace = (trace - mu) / std
-    return trace
+def standardize(traces):
+
+    mu = np.average(traces,1)
+    std = np.std(traces,1)
+    if np.min(std) != 0:
+        traces = (traces - mu.reshape(mu.shape[0],1)) / std.reshape(mu.shape[0],1)
+    return traces
 
 def cov(x, y):
     # Find the covariance between two 1D lists (x and y).
