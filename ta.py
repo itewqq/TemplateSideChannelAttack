@@ -8,7 +8,7 @@ from utils import *
 
 class TA:
     '''
-    A implementation of TA on 1 Byte of AES, the leak model is Hamming Weight by default.
+    An implementation of TA on 1 Byte of AES, the leak model is Hamming Weight by default.
     '''
     leak_model = None
     leak_range = None
@@ -95,7 +95,7 @@ class TA:
 
 
 if __name__ == '__main__':
-    # Setting for data operation
+    # Setting for data operation, the REAL KEY is 66
     filename = r'mega128a5V4M_origin'
     path = r'./data'
     trace_num = 10000
@@ -111,8 +111,8 @@ if __name__ == '__main__':
     traces=standardize(raw_traces)
 
     # If you need PCA, uncomment this
-    # pca=PCA(traces,explain_ratio=0.8)
-    # traces=pca.proj(traces)
+    pca=PCA(traces,explain_ratio=0.95)
+    traces=pca.proj(traces)
 
     # Train set
     num_train = 9800

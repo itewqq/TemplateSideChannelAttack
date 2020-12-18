@@ -114,7 +114,7 @@ class LDAClassifier:
 
 class LDAAttacker:
     '''
-    A implementation of Fisher-LDA Attack on 1 Byte of AES, the leak model is Hamming Weight by default.
+    An implementation of Fisher-LDA Attack on 1 Byte of AES, the leak model is Hamming Weight by default.
     '''
     clf=None
     leak_model=None
@@ -140,7 +140,7 @@ class LDAAttacker:
         print("The Fisher-LDA template has been created.")
 
     def attack(self,traces,plaintexts):
-        score=np.ones(256)
+        score=np.zeros(256)
         for trace,plaintext in zip(traces,plaintexts):
             for k in range(256):
                 score[k]+=np.real(self.clf.prob(trace,self.leak_model[SBOX[plaintext^k]]))
@@ -148,7 +148,7 @@ class LDAAttacker:
 
 
 if __name__ == '__main__':
-    # Setting for data operation
+    # Setting for data operation, the REAL KEY is 66
     filename = r'mega128a5V4M_origin'
     path = r'./data'
     trace_num = 10000
@@ -162,10 +162,6 @@ if __name__ == '__main__':
 
     # Normalization on raw data traces
     traces=standardize(raw_traces)
-
-    # If you need PCA, uncomment this
-    # pca=PCA(traces,explain_ratio=0.8)
-    # traces=pca.proj(traces)
 
     # Train set
     num_train = 9800

@@ -65,7 +65,7 @@ def align(trace0, tracei):
 
 
 if __name__ == '__main__':
-    # Setting for data operation
+    # Setting for data operation, the REAL KEY is 66
     filename = r'mega128a5V4M_origin'
     path = r'./data'
     trace_num = 100000

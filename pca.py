@@ -5,15 +5,16 @@ class PCA:
     A general PCA class
     '''
     proj_matrix=None
-    def __init__(self,X,explain_ratio=0.9):
+    def __init__(self,X,explain_ratio=0.95):
         cov_matrix=np.cov(X.T)
         eigen_values, eigen_vectors = np.linalg.eig(cov_matrix)
         esum=np.sum(eigen_values)
         variance_explained = np.zeros(eigen_values.shape[0])
         for i,v in enumerate(eigen_values):
-            variance_explained[i]=(v / sum(eigen_values)) * 100
+            variance_explained[i]=v / sum(eigen_values)
         cumulative_variance_explained = np.cumsum(variance_explained)
-        self.proj_matrix=eigen_vectors[:,np.where(explain_ratio<=variance_explained)[0]]
+        self.proj_matrix=eigen_vectors[:,:max(1,np.where(explain_ratio<=cumulative_variance_explained)[0][0])]
+        print("Dimension reduced from %d to %d"%(len(eigen_values),self.proj_matrix.shape[1]))
         return
 
     def proj(self,x):
