@@ -8,7 +8,6 @@ from scipy import signal
 from file_operate import *
 from utils import *
 
-
 LOG_FORMAT = LOG_FORMAT = "%(asctime)s - %(levelname)s - %(message)s"
 logging.basicConfig(level=logging.INFO, format=LOG_FORMAT)
 
@@ -55,9 +54,6 @@ class CPA:
         return pearsonr(X, Y)[0]
 
 
-
-
-
 def align(trace0, tracei):
     correlation = signal.correlate(tracei ** 2, trace0 ** 2)
     shift = np.argmax(correlation) - (len(trace0) - 1)
@@ -82,8 +78,8 @@ if __name__ == '__main__':
     traces = raw_traces
     plaintexts = raw_plaintexts
 
-    if False: # change this if you need alignment
-        traces ,plaintexts = cor_align(raw_traces,raw_plaintexts)
+    if False:  # change this if you need alignment
+        traces, plaintexts = cor_align(raw_traces, raw_plaintexts)
 
     plot_sample(raw_traces, 'raw')
     plot_sample(traces, 'aligned')

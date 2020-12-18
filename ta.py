@@ -83,8 +83,8 @@ class TA:
 
                 # Find p_{k,j}
                 # print(np.linalg.det(self.cov_matrix[mid]))
-                rv = multivariate_normal(self.mean_matrix[mid], self.cov_matrix[mid],allow_singular=True)
-                p_kj = PRE[mid]*rv.pdf(a)
+                rv = multivariate_normal(self.mean_matrix[mid], self.cov_matrix[mid], allow_singular=True)
+                p_kj = PRE[mid] * rv.pdf(a)
 
                 # Add it to running total
                 rank_key[k] += np.log(p_kj)
@@ -104,15 +104,15 @@ if __name__ == '__main__':
     # Transfer trs to npz
     trs2Npz(path, filename, filename, trace_num)
     target = np.load(path + '\\' + filename + '.npz')
-    raw_traces=target["trace"]
-    plaintexts=target["crypto_data"]
+    raw_traces = target["trace"]
+    plaintexts = target["crypto_data"]
 
     # Normalization on raw data traces
-    traces=standardize(raw_traces)
+    traces = standardize(raw_traces)
 
     # If you need PCA, uncomment this
-    pca=PCA(traces,explain_ratio=0.95)
-    traces=pca.proj(traces)
+    pca = PCA(traces, explain_ratio=0.95)
+    traces = pca.proj(traces)
 
     # Train set
     num_train = 9800

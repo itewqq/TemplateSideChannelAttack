@@ -1,5 +1,5 @@
 import numpy
-from numpy.linalg import inv,pinv,eig
+from numpy.linalg import inv, pinv, eig
 import matplotlib.pyplot as plt
 from sklearn.metrics import confusion_matrix
 from sklearn.model_selection import train_test_split
@@ -8,6 +8,7 @@ from sklearn import svm, datasets
 from pca import *
 from file_operate import *
 from utils import *
+
 
 class SVM_Attacker:
     '''
@@ -26,13 +27,14 @@ class SVM_Attacker:
         print("The SVM template has been created.")
 
     def attack(self, traces, plaintexts):
-        probs=self.clf.predict_proba(traces)
+        probs = self.clf.predict_proba(traces)
         score = np.zeros(256)
         for prob, plaintext in zip(probs, plaintexts):
             for k in range(256):
-                mid=self.leak_model[SBOX[plaintext ^ k]]
-                score[k] += PRE[mid]*prob[mid]
+                mid = self.leak_model[SBOX[plaintext ^ k]]
+                score[k] += PRE[mid] * prob[mid]
         print("Key found: %d" % score.argsort()[-1])
+
 
 if __name__ == '__main__':
     # Setting for data operation, the REAL KEY is 66
@@ -44,15 +46,15 @@ if __name__ == '__main__':
     # Transfer trs to npz
     trs2Npz(path, filename, filename, trace_num)
     target = np.load(path + '\\' + filename + '.npz')
-    raw_traces=target["trace"]
-    plaintexts=target["crypto_data"]
+    raw_traces = target["trace"]
+    plaintexts = target["crypto_data"]
 
     # Normalization on raw data traces
-    traces=standardize(raw_traces)
+    traces = standardize(raw_traces)
 
     # If you need PCA, uncomment this
-    pca=PCA(traces,explain_ratio=0.95)
-    traces=pca.proj(traces)
+    pca = PCA(traces, explain_ratio=0.95)
+    traces = pca.proj(traces)
 
     # Train set
     num_train = 9800

@@ -1,5 +1,5 @@
 import numpy
-from numpy.linalg import inv,pinv,eig
+from numpy.linalg import inv, pinv, eig
 import matplotlib.pyplot as plt
 
 from pca import *
@@ -78,9 +78,8 @@ class LDAClassifier:
         x_sub_u = np.subtract(x, u)
         return scalar * np.exp(-np.dot(np.dot(x_sub_u, inv(cov)), x_sub_u.T) / 2.)
 
-
-    def prob(self,x,y):
-        return  self.priors[y] * self.gaussian_distribution(self.project(x), self.g_means[y], self.g_covariance[y])
+    def prob(self, x, y):
+        return self.priors[y] * self.gaussian_distribution(self.project(x), self.g_means[y], self.g_covariance[y])
 
     def score(self, X, y):
         proj = self.project(X)
@@ -112,21 +111,22 @@ class LDAClassifier:
             means_k[class_i] = np.mean(input_vectors, axis=0)
         return means_k
 
+
 class LDAAttacker:
     '''
     An implementation of Fisher-LDA Attack on 1 Byte of AES, the leak model is Hamming Weight by default.
     '''
-    clf=None
-    leak_model=None
+    clf = None
+    leak_model = None
     leak_range = None
 
     def __init__(self, traces, plain_texts, real_key, leak_model=HW):
         self.leak_model = leak_model
-        self.leak_range = max(leak_model)+1
+        self.leak_range = max(leak_model) + 1
         data_dict = {}
         for x, pt in zip(traces, plain_texts):
             # Get Hamming Weight
-            y=leak_model[SBOX[pt^real_key]]
+            y = leak_model[SBOX[pt ^ real_key]]
             if y not in data_dict:
                 data_dict[y] = [x.flatten()]
             else:
@@ -135,15 +135,15 @@ class LDAAttacker:
         for i in range(self.leak_range):
             data_dict[i] = np.asarray(data_dict[i])
 
-        self.clf=LDAClassifier(self.leak_range)
+        self.clf = LDAClassifier(self.leak_range)
         self.clf.fit(data_dict)
         print("The Fisher-LDA template has been created.")
 
-    def attack(self,traces,plaintexts):
-        score=np.zeros(256)
-        for trace,plaintext in zip(traces,plaintexts):
+    def attack(self, traces, plaintexts):
+        score = np.zeros(256)
+        for trace, plaintext in zip(traces, plaintexts):
             for k in range(256):
-                score[k]+=np.real(self.clf.prob(trace,self.leak_model[SBOX[plaintext^k]]))
+                score[k] += np.real(self.clf.prob(trace, self.leak_model[SBOX[plaintext ^ k]]))
         print("Key found: %d" % score.argsort()[-1])
 
 
@@ -157,11 +157,11 @@ if __name__ == '__main__':
     # Transfer trs to npz
     trs2Npz(path, filename, filename, trace_num)
     target = np.load(path + '\\' + filename + '.npz')
-    raw_traces=target["trace"]
-    plaintexts=target["crypto_data"]
+    raw_traces = target["trace"]
+    plaintexts = target["crypto_data"]
 
     # Normalization on raw data traces
-    traces=standardize(raw_traces)
+    traces = standardize(raw_traces)
 
     # Train set
     num_train = 9800
@@ -172,7 +172,5 @@ if __name__ == '__main__':
     attack_pt = plaintexts[num_train:]
 
     # Attack
-    fish=LDAAttacker(traces=train_tr,plain_texts=train_pt,real_key=train_key)
-    fish.attack(attack_tr,attack_pt)
-
-
+    fish = LDAAttacker(traces=train_tr, plain_texts=train_pt, real_key=train_key)
+    fish.attack(attack_tr, attack_pt)
