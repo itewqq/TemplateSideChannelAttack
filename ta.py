@@ -16,13 +16,13 @@ class TA:
     mean_matrix = None
     cov_matrix = None
 
-    def __init__(self, traces, plain_text, real_key, num_pois, leak_model=HW, poi_spacing=5):
+    def __init__(self, traces, plain_texts, real_key, num_pois, leak_model=HW, poi_spacing=5):
         [trace_num, trace_point] = traces.shape
         self.leak_range = max(leak_model) + 1
         self.leak_model = leak_model
         self.mean_matrix = np.zeros((self.leak_range, num_pois))
         self.cov_matrix = np.zeros((self.leak_range, num_pois, num_pois))
-        temp_SBOX = [SBOX[plain_text[i] ^ real_key] for i in range(trace_num)]
+        temp_SBOX = [SBOX[plain_texts[i] ^ real_key] for i in range(trace_num)]
         temp_lm = [leak_model[s] for s in temp_SBOX]
         # Sort traces by HW
         # Make self.leak_range blank lists - one for each Hamming weight
@@ -67,7 +67,7 @@ class TA:
                     x = temp_traces_lm[mid][:, self.pois[i]]
                     y = temp_traces_lm[mid][:, self.pois[j]]
                     self.cov_matrix[mid, i, j] = cov(x, y)
-        print("The template is created.")
+        print("The template has been created.")
         return
 
     def attack(self, traces, plaintext):
@@ -84,7 +84,7 @@ class TA:
                 # Find p_{k,j}
                 # print(np.linalg.det(self.cov_matrix[mid]))
                 rv = multivariate_normal(self.mean_matrix[mid], self.cov_matrix[mid],allow_singular=True)
-                p_kj = rv.pdf(a)
+                p_kj = PRE[mid]*rv.pdf(a)
 
                 # Add it to running total
                 rank_key[k] += np.log(p_kj)
@@ -123,5 +123,5 @@ if __name__ == '__main__':
     attack_pt = plaintexts[num_train:]
 
     # Get a TA attacker
-    ta = TA(traces=train_tr, plain_text=train_pt, real_key=train_key, num_pois=5)
+    ta = TA(traces=train_tr, plain_texts=train_pt, real_key=train_key, num_pois=5)
     mean_matrix, cov_matrix, guessed = ta.attack(attack_tr, attack_pt)
